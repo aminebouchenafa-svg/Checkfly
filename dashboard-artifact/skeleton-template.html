@@ -10,51 +10,83 @@
     <div class="updated" id="updated-at">—</div>
   </div>
 
-  <div class="stats" id="stats"></div>
+  <div id="view-home">
+    <div class="home-grid">
+      <button type="button" class="home-block home-block-alerts" id="block-alerts">
+        <div class="home-block-top">
+          <span class="home-block-icon">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3l10 18H2L12 3z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 10v4M12 17h.01" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+          </span>
+          <span class="home-block-arrow">→</span>
+        </div>
+        <div class="home-block-value" id="home-alerts-value">—</div>
+        <div class="home-block-label">Alertes actives</div>
+        <div class="home-block-sub" id="home-alerts-sub"></div>
+      </button>
 
-  <section class="panel">
-    <div class="panel-head">
-      <span class="panel-title">Alertes</span>
-      <span class="panel-sub">Licence, simulateur, contrôle en ligne, anglais — ≤ 3 mois</span>
+      <button type="button" class="home-block home-block-roster" id="block-roster">
+        <div class="home-block-top">
+          <span class="home-block-icon">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="9" cy="8" r="3" stroke="currentColor" stroke-width="2"/><path d="M3 20c0-3 2.7-5 6-5s6 2 6 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="17.5" cy="9" r="2.4" stroke="currentColor" stroke-width="2"/><path d="M15.5 20c0-2.5 1.6-4 4.2-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </span>
+          <span class="home-block-arrow">→</span>
+        </div>
+        <div class="home-block-value" id="home-roster-value">—</div>
+        <div class="home-block-label">Effectif 737NG</div>
+        <div class="home-block-sub" id="home-roster-sub"></div>
+      </button>
     </div>
-    <div id="alerts"></div>
-  </section>
+  </div>
 
-  <section class="panel">
-    <div class="panel-head">
-      <span class="panel-title">Effectif 737NG</span>
-      <span class="panel-sub" id="roster-count"></span>
-    </div>
-    <div class="hint" id="edit-hint">Touche un pilote pour saisir ses dates de contrôle.</div>
-    <div class="roster-controls">
-      <input id="search" class="field" type="text" placeholder="Rechercher un pilote…" autocomplete="off">
-      <select id="rank-filter" class="field">
-        <option value="">Tous les grades</option>
-        <option value="CDB">Commandant de bord (CDB)</option>
-        <option value="OPL">Officier Pilote de ligne (OPL)</option>
-      </select>
-    </div>
-    <div class="table-scroll">
-      <table>
-        <thead>
-          <tr>
-            <th>Pilote</th>
-            <th>Licence</th>
-            <th>Simulateur</th>
-            <th>Contrôle en ligne</th>
-            <th>Anglais</th>
-          </tr>
-        </thead>
-        <tbody id="roster-body"></tbody>
-      </table>
-    </div>
-    <div class="no-results" id="no-results" hidden>Aucun pilote ne correspond à cette recherche.</div>
-    <div class="legend" id="legend"></div>
-  </section>
+  <div id="view-alerts" hidden>
+    <button type="button" class="back-btn" id="back-from-alerts">← Accueil</button>
+    <section class="panel">
+      <div class="panel-head">
+        <span class="panel-title">Alertes</span>
+        <span class="panel-sub">Licence, simulateur, contrôle en ligne, anglais — ≤ 3 mois</span>
+      </div>
+      <div id="alerts"></div>
+    </section>
+  </div>
+
+  <div id="view-roster" hidden>
+    <button type="button" class="back-btn" id="back-from-roster">← Accueil</button>
+    <section class="panel">
+      <div class="panel-head">
+        <span class="panel-title">Effectif 737NG</span>
+        <span class="panel-sub" id="roster-count"></span>
+      </div>
+      <div class="hint" id="edit-hint">Touche un pilote pour saisir ses dates de contrôle.</div>
+      <div class="roster-controls">
+        <input id="search" class="field" type="text" placeholder="Rechercher un pilote…" autocomplete="off">
+        <select id="rank-filter" class="field">
+          <option value="">Tous les grades</option>
+          <option value="CDB">Commandant de bord (CDB)</option>
+          <option value="OPL">Officier Pilote de ligne (OPL)</option>
+        </select>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Pilote</th>
+              <th>Licence</th>
+              <th>Simulateur</th>
+              <th>Contrôle en ligne</th>
+              <th>Anglais</th>
+            </tr>
+          </thead>
+          <tbody id="roster-body"></tbody>
+        </table>
+      </div>
+      <div class="no-results" id="no-results" hidden>Aucun pilote ne correspond à cette recherche.</div>
+      <div class="legend" id="legend"></div>
+    </section>
+  </div>
 
   <footer>
     Instantané généré le <span id="footer-date"></span> à partir du roster CheckFly.
-    Touche un pilote pour saisir ses dates de contrôle simulateur, contrôle en ligne et anglais — elles sont enregistrées directement dans cette page.
+    Touche un pilote (dans Alertes ou Effectif) pour saisir ses dates de contrôle simulateur, contrôle en ligne et anglais — elles sont enregistrées directement dans cette page.
     Pour signaler un départ ou une arrivée de pilote, transmets l'information à Fleet Training.
   </footer>
 </div>

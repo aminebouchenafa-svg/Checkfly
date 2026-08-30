@@ -142,12 +142,18 @@
     document.getElementById('updated-at').textContent = 'Mis à jour le ' + fmtDateTime(state.generatedAt);
     document.getElementById('footer-date').textContent = fmtDateTime(state.generatedAt);
 
-    document.getElementById('stats').innerHTML = [
-      statCard(totalCount, 'Effectif total', false),
-      statCard(cdbCount, 'Commandants de bord', false),
-      statCard(oplCount, 'Officiers pilotes de ligne', false),
-      statCard(alerts.length, 'Alertes actives', alerts.length > 0)
-    ].join('');
+    document.getElementById('home-alerts-value').textContent = alerts.length;
+    var alertsBlock = document.getElementById('block-alerts');
+    alertsBlock.classList.toggle('is-clear', alerts.length === 0);
+    document.getElementById('home-alerts-sub').textContent = alerts.length === 0
+      ? 'Tout est à jour'
+      : SEV_ORDER.map(function (sev) {
+          var n = alerts.filter(function (a) { return a.check.urgency === sev; }).length;
+          return n > 0 ? n + ' ' + SEV_META[sev].label.toLowerCase() : null;
+        }).filter(Boolean).join(' · ');
+
+    document.getElementById('home-roster-value').textContent = totalCount;
+    document.getElementById('home-roster-sub').textContent = cdbCount + ' CDB · ' + oplCount + ' OPL';
 
     var alertsEl = document.getElementById('alerts');
     if (alerts.length === 0) {
@@ -206,8 +212,16 @@
     applyFilter();
   }
 
-  function statCard(value, label, crit) {
-    return '<div class="stat' + (crit ? ' is-crit' : '') + '"><div class="stat-value">' + value + '</div><div class="stat-label">' + label + '</div></div>';
+  // ---------------------------------------------------------------------
+  // Navigation: home (two big blocks) → alerts / effectif drill-down
+  // ---------------------------------------------------------------------
+  var VIEW_KEY = 'checkfly-view';
+  function showView(view) {
+    document.getElementById('view-home').hidden = view !== 'home';
+    document.getElementById('view-alerts').hidden = view !== 'alerts';
+    document.getElementById('view-roster').hidden = view !== 'roster';
+    window.scrollTo(0, 0);
+    try { sessionStorage.setItem(VIEW_KEY, view); } catch (e) {}
   }
 
   function wireRowClicks() {
@@ -337,6 +351,15 @@
   // ---------------------------------------------------------------------
   document.addEventListener('DOMContentLoaded', function () {
     render();
+
+    var savedView = null;
+    try { savedView = sessionStorage.getItem(VIEW_KEY); } catch (e) {}
+    showView(savedView === 'alerts' || savedView === 'roster' ? savedView : 'home');
+
+    document.getElementById('block-alerts').addEventListener('click', function () { showView('alerts'); });
+    document.getElementById('block-roster').addEventListener('click', function () { showView('roster'); });
+    document.getElementById('back-from-alerts').addEventListener('click', function () { showView('home'); });
+    document.getElementById('back-from-roster').addEventListener('click', function () { showView('home'); });
 
     document.getElementById('search').addEventListener('input', applyFilter);
     document.getElementById('rank-filter').addEventListener('change', applyFilter);
