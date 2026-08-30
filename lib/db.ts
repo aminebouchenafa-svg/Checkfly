@@ -20,7 +20,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 db.pragma('journal_mode = WAL');
-db.pragma('busy_timeout = 5000');
+db.pragma('busy_timeout = 15000');
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS pilots (
@@ -111,9 +111,14 @@ export function deletePilot(id: number): void {
 }
 
 function seedDefaults(): void {
-  // INSERT OR IGNORE + the unique index above make this safe to run from
-  // multiple processes concurrently (e.g. Next.js build workers) without
-  // duplicating rows.
+  // Fast path: skip entirely once seeded, so concurrent processes (e.g.
+  // Next.js build workers) don't all pay for a multi-hundred-row transaction
+  // and contend for the write lock at once.
+  const { count } = db.prepare('SELECT COUNT(*) as count FROM pilots').get() as { count: number };
+  if (count > 0) return;
+
+  // INSERT OR IGNORE + the unique index above make this safe even if two
+  // processes both pass the count check above at the same time.
   const insert = db.prepare(`
     INSERT OR IGNORE INTO pilots (firstName, lastName, rank, fleet, licenseExpiry, simulatorExpiry, lineCheckExpiry, englishExpiry, notes)
     VALUES (@firstName, @lastName, @rank, 'B737NG', NULL, NULL, NULL, NULL, NULL)

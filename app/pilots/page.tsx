@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { getAllPilots } from '@/lib/db';
 import { withStatus, formatDate, URGENCY_META } from '@/lib/alerts';
 import { RankBadge, UrgencyBadge } from '@/components/Badge';
+import { StatCard } from '@/components/StatCard';
 
 export default async function PilotsPage({
   searchParams
@@ -12,7 +13,12 @@ export default async function PilotsPage({
   const rankFilter = resolvedSearchParams.rank;
   const query = (resolvedSearchParams.q ?? '').trim().toLowerCase();
 
-  let pilots = withStatus(getAllPilots());
+  const allPilots = withStatus(getAllPilots());
+  const totalCount = allPilots.length;
+  const cdbCount = allPilots.filter((p) => p.rank === 'CDB').length;
+  const oplCount = allPilots.filter((p) => p.rank === 'OPL').length;
+
+  let pilots = allPilots;
   if (rankFilter === 'CDB' || rankFilter === 'OPL') {
     pilots = pilots.filter((p) => p.rank === rankFilter);
   }
@@ -27,6 +33,12 @@ export default async function PilotsPage({
         <Link href="/pilots/new" className="rounded-md bg-brand-600 px-4 py-2 text-white text-sm font-medium hover:bg-brand-700">
           + Ajouter un pilote
         </Link>
+      </div>
+
+      <div className="grid grid-cols-3 gap-3">
+        <StatCard label="Effectif total" value={totalCount} />
+        <StatCard label="Commandants de bord (CDB)" value={cdbCount} />
+        <StatCard label="Officiers pilotes de ligne (OPL)" value={oplCount} />
       </div>
 
       <form className="flex flex-wrap gap-3 bg-white border border-gray-200 rounded-xl p-4" method="get">

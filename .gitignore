@@ -3,6 +3,8 @@ node_modules
 out
 data/*.db
 data/*.db-journal
+data/*.db-wal
+data/*.db-shm
 .env*.local
 npm-debug.log*
 .DS_Store
