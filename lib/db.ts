@@ -20,6 +20,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 db.pragma('journal_mode = WAL');
+db.pragma('busy_timeout = 5000');
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS pilots (
@@ -36,6 +37,7 @@ db.exec(`
     createdAt TEXT NOT NULL DEFAULT (datetime('now')),
     updatedAt TEXT NOT NULL DEFAULT (datetime('now'))
   );
+  CREATE UNIQUE INDEX IF NOT EXISTS idx_pilots_identity ON pilots (firstName, lastName, rank, fleet);
 `);
 
 export type Rank = 'CDB' | 'OPL';
@@ -107,3 +109,23 @@ export function updatePilot(id: number, input: PilotInput): void {
 export function deletePilot(id: number): void {
   db.prepare('DELETE FROM pilots WHERE id = ?').run(id);
 }
+
+function seedDefaults(): void {
+  // INSERT OR IGNORE + the unique index above make this safe to run from
+  // multiple processes concurrently (e.g. Next.js build workers) without
+  // duplicating rows.
+  const insert = db.prepare(`
+    INSERT OR IGNORE INTO pilots (firstName, lastName, rank, fleet, licenseExpiry, simulatorExpiry, lineCheckExpiry, englishExpiry, notes)
+    VALUES (@firstName, @lastName, @rank, 'B737NG', NULL, NULL, NULL, NULL, NULL)
+  `);
+  const insertMany = db.transaction((pilots: { firstName: string; lastName: string; rank: Rank }[]) => {
+    for (const pilot of pilots) insert.run(pilot);
+  });
+
+  // Lazy require avoids a circular import at module-eval time (seed-data.ts
+  // only needs the PilotInput *type* from this file, erased at compile time).
+  const { SEED_PILOTS } = require('./seed-data') as typeof import('./seed-data');
+  insertMany(SEED_PILOTS);
+}
+
+seedDefaults();
