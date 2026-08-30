@@ -358,7 +358,9 @@ const FIRST_OFFICERS: SeedPilot[] = [
   // Confirmés 737NG par le PDF SECTEUR_NG (licence déjà expirée/proche) alors
   // qu'ils n'avaient pas été repérés comme cochés sur la photo du classement FO.
   { lastName: 'Arab', firstName: 'Islam', rank: 'OPL', licenseExpiry: '2026-08-27' },
-  { lastName: 'Bounar', firstName: 'Hichem', rank: 'OPL', licenseExpiry: '2026-08-30' }
+  { lastName: 'Bounar', firstName: 'Hichem', rank: 'OPL', licenseExpiry: '2026-08-30' },
+  { lastName: 'Benali', firstName: 'Idir', rank: 'OPL', licenseExpiry: '2026-07-31' },
+  { lastName: 'Brahimi', firstName: 'Ali', rank: 'OPL', licenseExpiry: '2026-07-31' }
 ];
 
 export const SEED_PILOTS: SeedPilot[] = [...CAPTAINS, ...FIRST_OFFICERS];
