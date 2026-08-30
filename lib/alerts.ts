@@ -23,9 +23,18 @@ export const SIMULATOR_VALIDITY_MONTHS = 6;
 export const LINE_CHECK_VALIDITY_MONTHS = 12;
 
 export function addMonths(dateStr: string, months: number): string {
-  const date = new Date(dateStr);
-  date.setMonth(date.getMonth() + months);
-  return date.toISOString().slice(0, 10);
+  // Pure calendar-integer arithmetic — never routes through a local-time
+  // Date object + toISOString(), which silently shifts by a day whenever
+  // the server/browser timezone offset is non-zero.
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const total = (m - 1) + months;
+  const newYear = y + Math.floor(total / 12);
+  const newMonth0 = ((total % 12) + 12) % 12;
+  const daysInMonth = new Date(Date.UTC(newYear, newMonth0 + 1, 0)).getUTCDate();
+  const newDay = Math.min(d, daysInMonth);
+  const mm = String(newMonth0 + 1).padStart(2, '0');
+  const dd = String(newDay).padStart(2, '0');
+  return `${newYear}-${mm}-${dd}`;
 }
 
 function daysBetween(from: Date, to: Date): number {

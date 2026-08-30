@@ -5,9 +5,19 @@
   // Pure date / status helpers (mirrors lib/alerts.ts in the CheckFly repo)
   // ---------------------------------------------------------------------
   function addMonths(dateStr, months) {
-    var d = new Date(dateStr + 'T00:00:00');
-    d.setMonth(d.getMonth() + months);
-    return d.toISOString().slice(0, 10);
+    // Pure calendar-integer arithmetic — never routes through a local-time
+    // Date object + toISOString(), which silently shifts by a day whenever
+    // the viewer's timezone offset is non-zero (e.g. UTC+1 in Algeria).
+    var parts = dateStr.split('-').map(Number);
+    var y = parts[0], m0 = parts[1] - 1, d = parts[2];
+    var total = m0 + months;
+    var newYear = y + Math.floor(total / 12);
+    var newMonth0 = ((total % 12) + 12) % 12;
+    var daysInMonth = new Date(Date.UTC(newYear, newMonth0 + 1, 0)).getUTCDate();
+    var newDay = Math.min(d, daysInMonth);
+    var mm = String(newMonth0 + 1).padStart(2, '0');
+    var dd = String(newDay).padStart(2, '0');
+    return newYear + '-' + mm + '-' + dd;
   }
 
   function daysBetween(from, to) {
