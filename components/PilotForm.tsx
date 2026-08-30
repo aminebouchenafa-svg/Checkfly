@@ -1,8 +1,20 @@
+'use client';
+
+import { useState } from 'react';
 import type { Pilot } from '@/lib/db';
+
+const SIMULATOR_VALIDITY_MONTHS = 6;
+const LINE_CHECK_VALIDITY_MONTHS = 12;
 
 function toInputDate(value: string | null): string {
   if (!value) return '';
   return value.slice(0, 10);
+}
+
+function addMonths(dateStr: string, months: number): string {
+  const date = new Date(dateStr);
+  date.setMonth(date.getMonth() + months);
+  return date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 
 export function PilotForm({
@@ -14,6 +26,9 @@ export function PilotForm({
   action: (formData: FormData) => void;
   submitLabel: string;
 }) {
+  const [simulatorLastCheck, setSimulatorLastCheck] = useState(toInputDate(pilot?.simulatorLastCheck ?? null));
+  const [lineCheckLastCheck, setLineCheckLastCheck] = useState(toInputDate(pilot?.lineCheckLastCheck ?? null));
+
   return (
     <form action={action} className="space-y-6 bg-white rounded-xl border border-gray-200 p-6">
       <div className="grid sm:grid-cols-2 gap-4">
@@ -54,22 +69,6 @@ export function PilotForm({
               className="input"
             />
           </Field>
-          <Field label="Expiration contrôle simulateur (OPC)">
-            <input
-              type="date"
-              name="simulatorExpiry"
-              defaultValue={toInputDate(pilot?.simulatorExpiry ?? null)}
-              className="input"
-            />
-          </Field>
-          <Field label="Expiration contrôle en ligne">
-            <input
-              type="date"
-              name="lineCheckExpiry"
-              defaultValue={toInputDate(pilot?.lineCheckExpiry ?? null)}
-              className="input"
-            />
-          </Field>
           <Field label="Expiration niveau anglais (OACI)">
             <input
               type="date"
@@ -77,6 +76,36 @@ export function PilotForm({
               defaultValue={toInputDate(pilot?.englishExpiry ?? null)}
               className="input"
             />
+          </Field>
+          <Field label="Date du dernier contrôle simulateur (OPC)">
+            <input
+              type="date"
+              name="simulatorLastCheck"
+              value={simulatorLastCheck}
+              onChange={(e) => setSimulatorLastCheck(e.target.value)}
+              className="input"
+            />
+            <p className="mt-1 text-xs text-gray-500">
+              Validité {SIMULATOR_VALIDITY_MONTHS} mois
+              {simulatorLastCheck && (
+                <> — expire le <span className="font-medium text-gray-700">{addMonths(simulatorLastCheck, SIMULATOR_VALIDITY_MONTHS)}</span></>
+              )}
+            </p>
+          </Field>
+          <Field label="Date du dernier contrôle en ligne">
+            <input
+              type="date"
+              name="lineCheckLastCheck"
+              value={lineCheckLastCheck}
+              onChange={(e) => setLineCheckLastCheck(e.target.value)}
+              className="input"
+            />
+            <p className="mt-1 text-xs text-gray-500">
+              Validité {LINE_CHECK_VALIDITY_MONTHS} mois
+              {lineCheckLastCheck && (
+                <> — expire le <span className="font-medium text-gray-700">{addMonths(lineCheckLastCheck, LINE_CHECK_VALIDITY_MONTHS)}</span></>
+              )}
+            </p>
           </Field>
         </div>
       </div>

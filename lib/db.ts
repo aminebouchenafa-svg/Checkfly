@@ -30,7 +30,9 @@ db.exec(`
     rank TEXT NOT NULL CHECK (rank IN ('CDB', 'OPL')),
     fleet TEXT NOT NULL DEFAULT 'B737NG',
     licenseExpiry TEXT,
+    simulatorLastCheck TEXT,
     simulatorExpiry TEXT,
+    lineCheckLastCheck TEXT,
     lineCheckExpiry TEXT,
     englishExpiry TEXT,
     notes TEXT,
@@ -39,6 +41,18 @@ db.exec(`
   );
   CREATE UNIQUE INDEX IF NOT EXISTS idx_pilots_identity ON pilots (firstName, lastName, rank, fleet);
 `);
+
+// Adds columns introduced after the initial CREATE TABLE, for databases
+// created by an older version of this app (CREATE TABLE IF NOT EXISTS above
+// only runs on a brand-new file).
+function ensureColumn(column: string, ddl: string): void {
+  const columns = db.prepare('PRAGMA table_info(pilots)').all() as { name: string }[];
+  if (!columns.some((c) => c.name === column)) {
+    db.exec(`ALTER TABLE pilots ADD COLUMN ${ddl}`);
+  }
+}
+ensureColumn('simulatorLastCheck', 'simulatorLastCheck TEXT');
+ensureColumn('lineCheckLastCheck', 'lineCheckLastCheck TEXT');
 
 export type Rank = 'CDB' | 'OPL';
 
@@ -49,7 +63,9 @@ export interface Pilot {
   rank: Rank;
   fleet: string;
   licenseExpiry: string | null;
+  simulatorLastCheck: string | null;
   simulatorExpiry: string | null;
+  lineCheckLastCheck: string | null;
   lineCheckExpiry: string | null;
   englishExpiry: string | null;
   notes: string | null;
@@ -73,7 +89,9 @@ export interface PilotInput {
   rank: Rank;
   fleet: string;
   licenseExpiry: string | null;
+  simulatorLastCheck: string | null;
   simulatorExpiry: string | null;
+  lineCheckLastCheck: string | null;
   lineCheckExpiry: string | null;
   englishExpiry: string | null;
   notes: string | null;
@@ -81,8 +99,8 @@ export interface PilotInput {
 
 export function createPilot(input: PilotInput): number {
   const stmt = db.prepare(`
-    INSERT INTO pilots (firstName, lastName, rank, fleet, licenseExpiry, simulatorExpiry, lineCheckExpiry, englishExpiry, notes)
-    VALUES (@firstName, @lastName, @rank, @fleet, @licenseExpiry, @simulatorExpiry, @lineCheckExpiry, @englishExpiry, @notes)
+    INSERT INTO pilots (firstName, lastName, rank, fleet, licenseExpiry, simulatorLastCheck, simulatorExpiry, lineCheckLastCheck, lineCheckExpiry, englishExpiry, notes)
+    VALUES (@firstName, @lastName, @rank, @fleet, @licenseExpiry, @simulatorLastCheck, @simulatorExpiry, @lineCheckLastCheck, @lineCheckExpiry, @englishExpiry, @notes)
   `);
   const result = stmt.run(input);
   return Number(result.lastInsertRowid);
@@ -96,7 +114,9 @@ export function updatePilot(id: number, input: PilotInput): void {
       rank = @rank,
       fleet = @fleet,
       licenseExpiry = @licenseExpiry,
+      simulatorLastCheck = @simulatorLastCheck,
       simulatorExpiry = @simulatorExpiry,
+      lineCheckLastCheck = @lineCheckLastCheck,
       lineCheckExpiry = @lineCheckExpiry,
       englishExpiry = @englishExpiry,
       notes = @notes,

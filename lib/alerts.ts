@@ -17,6 +17,17 @@ export interface PilotWithStatus extends Pilot {
 
 const URGENCY_ORDER: UrgencyLevel[] = ['expired', 'urgent', 'warning', 'notice', 'ok', 'unknown'];
 
+// Durées de validité réglementaires : simulateur (OPC) 6 mois, contrôle en
+// ligne 1 an, à partir de la date du dernier contrôle effectué.
+export const SIMULATOR_VALIDITY_MONTHS = 6;
+export const LINE_CHECK_VALIDITY_MONTHS = 12;
+
+export function addMonths(dateStr: string, months: number): string {
+  const date = new Date(dateStr);
+  date.setMonth(date.getMonth() + months);
+  return date.toISOString().slice(0, 10);
+}
+
 function daysBetween(from: Date, to: Date): number {
   const msPerDay = 1000 * 60 * 60 * 24;
   const a = Date.UTC(from.getFullYear(), from.getMonth(), from.getDate());
