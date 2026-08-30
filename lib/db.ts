@@ -121,11 +121,13 @@ function seedDefaults(): void {
   // processes both pass the count check above at the same time.
   const insert = db.prepare(`
     INSERT OR IGNORE INTO pilots (firstName, lastName, rank, fleet, licenseExpiry, simulatorExpiry, lineCheckExpiry, englishExpiry, notes)
-    VALUES (@firstName, @lastName, @rank, 'B737NG', NULL, NULL, NULL, NULL, NULL)
+    VALUES (@firstName, @lastName, @rank, 'B737NG', @licenseExpiry, NULL, NULL, NULL, NULL)
   `);
-  const insertMany = db.transaction((pilots: { firstName: string; lastName: string; rank: Rank }[]) => {
-    for (const pilot of pilots) insert.run(pilot);
-  });
+  const insertMany = db.transaction(
+    (pilots: { firstName: string; lastName: string; rank: Rank; licenseExpiry?: string }[]) => {
+      for (const pilot of pilots) insert.run({ ...pilot, licenseExpiry: pilot.licenseExpiry ?? null });
+    }
+  );
 
   // Lazy require avoids a circular import at module-eval time (seed-data.ts
   // only needs the PilotInput *type* from this file, erased at compile time).
