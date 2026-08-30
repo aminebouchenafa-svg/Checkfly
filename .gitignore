@@ -9,3 +9,4 @@ data/*.db-shm
 npm-debug.log*
 .DS_Store
 roster-export.json
+dashboard-export.html

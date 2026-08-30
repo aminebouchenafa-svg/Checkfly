@@ -1,0 +1,95 @@
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">
+      <span class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 16l7-2 4-8 2 .5-2 7.5 6-1 2 1-7 4-1 4-2-.5-.5-3-4.5 1L2 16z" fill="#fff"/></svg>
+      </span>
+      <span class="brand-name">CheckFly</span>
+      <span class="brand-tag">737NG</span>
+    </div>
+    <div class="updated" id="updated-at">—</div>
+  </div>
+
+  <div class="stats" id="stats"></div>
+
+  <section class="panel">
+    <div class="panel-head">
+      <span class="panel-title">Alertes</span>
+      <span class="panel-sub">Licence, simulateur, contrôle en ligne, anglais — ≤ 3 mois</span>
+    </div>
+    <div id="alerts"></div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <span class="panel-title">Effectif 737NG</span>
+      <span class="panel-sub" id="roster-count"></span>
+    </div>
+    <div class="hint" id="edit-hint">Touche un pilote pour saisir ses dates de contrôle.</div>
+    <div class="roster-controls">
+      <input id="search" class="field" type="text" placeholder="Rechercher un pilote…" autocomplete="off">
+      <select id="rank-filter" class="field">
+        <option value="">Tous les grades</option>
+        <option value="CDB">Commandant de bord (CDB)</option>
+        <option value="OPL">Officier Pilote de ligne (OPL)</option>
+      </select>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Pilote</th>
+            <th>Licence</th>
+            <th>Simulateur</th>
+            <th>Contrôle en ligne</th>
+            <th>Anglais</th>
+          </tr>
+        </thead>
+        <tbody id="roster-body"></tbody>
+      </table>
+    </div>
+    <div class="no-results" id="no-results" hidden>Aucun pilote ne correspond à cette recherche.</div>
+    <div class="legend" id="legend"></div>
+  </section>
+
+  <footer>
+    Instantané généré le <span id="footer-date"></span> à partir du roster CheckFly.
+    Touche un pilote pour saisir ses dates de contrôle simulateur, contrôle en ligne et anglais — elles sont enregistrées directement dans cette page.
+    Pour signaler un départ ou une arrivée de pilote, transmets l'information à Fleet Training.
+  </footer>
+</div>
+
+<div class="overlay" id="overlay" hidden>
+  <div class="sheet" id="sheet">
+    <div class="sheet-head">
+      <div>
+        <div class="sheet-title" id="sheet-title">—</div>
+        <span class="pilot-grade sheet-grade" id="sheet-grade"></span>
+      </div>
+      <button type="button" class="sheet-close" id="sheet-close" aria-label="Fermer">✕</button>
+    </div>
+    <div class="sheet-body">
+      <div class="sheet-field">
+        <label for="input-simu">Date du dernier contrôle simulateur (OPC)</label>
+        <input type="date" id="input-simu" class="field">
+        <div class="sheet-preview" id="preview-simu"></div>
+      </div>
+      <div class="sheet-field">
+        <label for="input-line">Date du dernier contrôle en ligne</label>
+        <input type="date" id="input-line" class="field">
+        <div class="sheet-preview" id="preview-line"></div>
+      </div>
+      <div class="sheet-field">
+        <label for="input-english">Validité niveau anglais (OACI)</label>
+        <input type="date" id="input-english" class="field">
+      </div>
+    </div>
+    <div class="sheet-msg" id="sheet-msg" hidden></div>
+    <div class="sheet-foot">
+      <button type="button" class="btn btn-secondary" id="sheet-cancel">Annuler</button>
+      <button type="button" class="btn btn-primary" id="sheet-save">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>

@@ -46,19 +46,40 @@ npm run start
 
 ## Roster (`lib/seed-data.ts`)
 
-Le roster des pilotes 737NG (CDB + OPL) et leurs dates connues vivent dans
-`lib/seed-data.ts`, versionné avec le code. C'est la source de vérité :
-à chaque départ/arrivée ou nouvelle date d'échéance, ce fichier est mis à jour
-et poussé sur GitHub — aucune base de données hébergée n'est nécessaire.
+L'appartenance à la flotte 737NG (qui est CDB, qui est OPL, qui a quitté ou
+rejoint le secteur) vit dans `lib/seed-data.ts`, versionné avec le code —
+c'est la source de vérité pour les *effectifs*. À chaque départ/arrivée, ce
+fichier est mis à jour et poussé sur GitHub.
 
-Pour extraire un instantané JSON du roster (avec statuts calculés) — utilisé
-pour régénérer le tableau de bord public en lecture seule :
+## Tableau de bord public éditable (`dashboard-artifact/`)
+
+En plus de l'app Next.js, un tableau de bord autonome est publié comme
+Claude Artifact (lien partagé séparément) pour consultation et saisie sans
+serveur à héberger. C'est une page HTML unique, self-contained, qui utilise
+la capacité `artifact` de Claude pour s'auto-republier à chaque modification :
+toucher un pilote ouvre un formulaire (date dernier contrôle simulateur,
+dernier contrôle en ligne, validité anglais) et "Enregistrer" sauvegarde une
+nouvelle version de la page elle-même — aucune base de données externe.
+
+Sources dans `dashboard-artifact/` :
+- `dashboard.css` — palette/typo/composants
+- `head-template.html`, `skeleton-template.html` — structure HTML statique
+- `app-logic.js` — rendu, filtre, formulaire d'édition, republication
+
+Pour reconstruire le fichier à publier (après un changement d'effectif dans
+`lib/seed-data.ts`, ou une modification des sources ci-dessus) :
 
 ```bash
-npm run export:roster
+npm run build:dashboard
 ```
 
-Écrit `roster-export.json` (non versionné) à la racine.
+Écrit `dashboard-export.html` (non versionné) à la racine — c'est le fichier à
+republier via l'outil Artifact. **Attention** : ceci repart de
+`lib/seed-data.ts` avec les dates simulateur/contrôle en ligne/anglais
+vierges. Si des dates ont été saisies directement sur la page publiée depuis
+le dernier export, relire d'abord son contenu actuel (action `read` de
+l'outil Artifact) et fusionner ces dates dans le nouvel export avant de
+republier, pour ne pas les écraser.
 
 ## Notes techniques
 
