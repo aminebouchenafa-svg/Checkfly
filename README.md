@@ -44,6 +44,22 @@ npm run start
   échéances).
 - Cliquer sur un pilote pour modifier ses informations ou le supprimer.
 
+## Roster (`lib/seed-data.ts`)
+
+Le roster des pilotes 737NG (CDB + OPL) et leurs dates connues vivent dans
+`lib/seed-data.ts`, versionné avec le code. C'est la source de vérité :
+à chaque départ/arrivée ou nouvelle date d'échéance, ce fichier est mis à jour
+et poussé sur GitHub — aucune base de données hébergée n'est nécessaire.
+
+Pour extraire un instantané JSON du roster (avec statuts calculés) — utilisé
+pour régénérer le tableau de bord public en lecture seule :
+
+```bash
+npm run export:roster
+```
+
+Écrit `roster-export.json` (non versionné) à la racine.
+
 ## Notes techniques
 
 - Next.js 15 (App Router) + TypeScript + Tailwind CSS
